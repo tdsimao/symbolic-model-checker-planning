@@ -13,3 +13,4 @@ target_include_directories (smcp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories( BEFORE ../lib/cudd/include)
 
 
+add_definitions(-std=c++11)

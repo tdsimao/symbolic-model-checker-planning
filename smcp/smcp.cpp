@@ -14,6 +14,11 @@ void smcp::set_mgr(Cudd mgr) {
 }
 
 
+SymbolicAction::SymbolicAction()
+        : SymbolicAction("") {
+}
+
+
 SymbolicAction::SymbolicAction(const std::string &name)
         : name_(name),
           precondition_(smcp::mgr().bddOne()),
@@ -55,3 +60,9 @@ BDD SymbolicAction::changes() {
 std::string  SymbolicAction::name() {
     return name_;
 }
+
+void SymbolicAction::set_name(std::string name) {
+    name_ = name;
+
+}
+

@@ -17,6 +17,7 @@ class SymbolicAction {
     BDD changes_;
 public:
     SymbolicAction( const std::string& name );
+    SymbolicAction();
 
     std::string name();
     void set_name(std::string name);

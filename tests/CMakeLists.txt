@@ -15,5 +15,5 @@ add_definitions(-std=c++11)
 
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-add_executable (runTests sample1_unittest.cc )
+add_executable (runTests sample1_unittest.cc  smcp_unittest.cc)
 target_link_libraries (runTests LINK_PUBLIC smcp cudd pthread gtest gtest_main)
