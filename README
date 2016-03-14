@@ -1,3 +1,3 @@
 symbolic-model-checker-planning
 
-We assume the existence of a symbolic link to the cudd instalation in the lib directory in the root directory.
+We assume the existence of a symbolic link to the cudd installation in the lib directory in the root directory.

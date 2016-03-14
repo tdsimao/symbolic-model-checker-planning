@@ -1,0 +1,15 @@
+lib/cudd/*
+lib/gtest/*
+
+.idea
+
+*.o
+tests/test
+
+smcp/libsmcp.a
+
+build/*
+
+
+old/*
+
