@@ -1,6 +1,9 @@
 #include "cuddObj.hh"
 
 
+#define BDD_ZERO smcp::mgr().bddZero()
+#define BDD_ONE smcp::mgr().bddOne()
+
 class smcp {
     static Cudd mgr_;
 public:
@@ -15,9 +18,11 @@ class SymbolicAction {
     BDD precondition_;
     BDD effect_;
     BDD changes_;
+    void update_changes();
 public:
-    SymbolicAction( const std::string& name );
     SymbolicAction();
+    SymbolicAction( const std::string& name );
+    SymbolicAction( const std::string& name, BDD prec, BDD eff );
 
     std::string name();
     void set_name(std::string name);
@@ -26,6 +31,12 @@ public:
     BDD effect();
     void set_effect(BDD eff);
     BDD changes();
+
 };
 
 
+
+
+BDD weak_pre_image(SymbolicAction action, BDD world_state);
+
+BDD strong_pre_image(SymbolicAction action, BDD world_state);

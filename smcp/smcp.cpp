@@ -5,57 +5,53 @@
 #include <iostream>
 #include "smcp.h"
 
-Cudd  smcp::mgr_;
+Cudd smcp::mgr_;
 
 void smcp::set_mgr(Cudd mgr) {
-
     smcp::mgr_ = mgr;
-
 }
 
 
-SymbolicAction::SymbolicAction()
-        : SymbolicAction("") {
+SymbolicAction::SymbolicAction(const std::string &name, BDD prec, BDD eff) :
+        name_(name),
+        precondition_(prec),
+        effect_(eff) {
+    update_changes();
 }
 
+SymbolicAction::SymbolicAction(const std::string &name) :
+        SymbolicAction(name, BDD_ONE, BDD_ONE) { }
 
-SymbolicAction::SymbolicAction(const std::string &name)
-        : name_(name),
-          precondition_(smcp::mgr().bddOne()),
-          effect_(smcp::mgr().bddOne()),
-          changes_(smcp::mgr().bddOne()){
-
-}
+SymbolicAction::SymbolicAction() :
+        SymbolicAction("") { }
 
 
 BDD SymbolicAction::precondition() {
-    std::cout << "Get precondition" << std::endl;
     return precondition_;
 }
 
 void SymbolicAction::set_precondition(BDD prec) {
-    std::cout << "Set precondition" << std::endl;
     precondition_ = prec;
 }
 
 void SymbolicAction::set_effect(BDD eff) {
-    std::cout << "Set effect" << std::endl;
     effect_ = eff;
-    // TODO define changes
-    changes_ = smcp::mgr().bddOne();
-//    ExistAbstract
+    update_changes();
 
 }
 
 BDD SymbolicAction::effect() {
-    std::cout << "Get effect" << std::endl;
     return effect_;
 }
 
 BDD SymbolicAction::changes() {
-    std::cout << "Get changes" << std::endl;
     return changes_;
 }
+
+void SymbolicAction::update_changes() {
+    changes_ = effect_.Support();
+}
+
 
 std::string  SymbolicAction::name() {
     return name_;
@@ -63,6 +59,19 @@ std::string  SymbolicAction::name() {
 
 void SymbolicAction::set_name(std::string name) {
     name_ = name;
-
 }
 
+
+BDD weak_pre_image(SymbolicAction action, BDD world_state) {
+    BDD result = action.effect() & world_state;
+    result = result.ExistAbstract(action.changes());
+    result &= action.precondition();
+    return result;
+}
+
+BDD strong_pre_image(SymbolicAction action, BDD world_state) {
+    BDD result = ~action.effect() | world_state;
+    result = result.ExistAbstract(action.changes());
+    result &= action.precondition();
+    return result;
+}
