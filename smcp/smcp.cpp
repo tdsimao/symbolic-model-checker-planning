@@ -71,7 +71,7 @@ BDD weak_pre_image(SymbolicAction action, BDD world_state) {
 
 BDD strong_pre_image(SymbolicAction action, BDD world_state) {
     BDD result = ~action.effect() | world_state;
-    result = result.ExistAbstract(action.changes());
+    result = result.UnivAbstract(action.changes());
     result &= action.precondition();
     return result;
 }

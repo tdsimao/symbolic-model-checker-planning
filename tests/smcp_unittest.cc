@@ -15,7 +15,7 @@ protected:
         a2 = SymbolicAction();
         a3 = SymbolicAction("a3", bdd_var[0], bdd_var[1]);
         a4 = SymbolicAction("a4", bdd_var[0], bdd_var[1] & bdd_var[2]);
-        a5 = SymbolicAction("a4", bdd_var[0], bdd_var[3] | bdd_var[4]);
+        a5 = SymbolicAction("a4", bdd_var[0], bdd_var[1] | bdd_var[2]);
     }
 
 
@@ -24,7 +24,7 @@ protected:
     static void SetUpTestCase() {
         test_mgr = smcp::mgr();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 3; i++) {
             bdd_var[i] = test_mgr.bddVar();
         }
 
@@ -37,7 +37,7 @@ protected:
     static Cudd test_mgr;
 
     SymbolicAction a1, a2, a3, a4, a5;
-    static BDD bdd_var[5];
+    static BDD bdd_var[3];
 };
 
 
@@ -65,7 +65,7 @@ TEST_F(SymbolicActionTest, TestChanges) {
     EXPECT_EQ(BDD_ONE, a2.changes());
     EXPECT_EQ(bdd_var[1], a3.changes());
     EXPECT_EQ(bdd_var[1] & bdd_var[2], a4.changes());
-    EXPECT_EQ(bdd_var[3] & bdd_var[4], a5.changes());
+    EXPECT_EQ(bdd_var[1] & bdd_var[2], a5.changes());
 }
 
 TEST_F(SymbolicActionTest, SetName) {
@@ -125,7 +125,7 @@ TEST_F(SymbolicActionTest, WeakPreNoPreconditionNoEffect) {
     EXPECT_EQ(world, result);
 }
 
-TEST_F(SymbolicActionTest, WeakPreImage) {
+TEST_F(SymbolicActionTest, WeakPreImageSimpleEffect) {
     BDD world = bdd_var[1] & bdd_var[2];
     BDD result = weak_pre_image(a3, world);
     EXPECT_EQ(bdd_var[0] & bdd_var[2], result);
@@ -143,6 +143,140 @@ TEST_F(SymbolicActionTest, WeakPreImage) {
     EXPECT_EQ(BDD_ZERO, result);
 }
 
+
+TEST_F(SymbolicActionTest, WeakPreImageConjunction) {
+    BDD world = bdd_var[1] & bdd_var[2];
+    BDD result = weak_pre_image(a4, world);
+    EXPECT_EQ(bdd_var[0], result);
+
+    world = bdd_var[1] | bdd_var[2];
+    result = weak_pre_image(a4, world);
+    EXPECT_EQ(bdd_var[0], result);
+
+    world = bdd_var[1] & ~bdd_var[2];
+    result = weak_pre_image(a4, world);
+    EXPECT_EQ(BDD_ZERO, result);
+
+    world = ~bdd_var[1] & bdd_var[2];
+    result = weak_pre_image(a4, world);
+    EXPECT_EQ(BDD_ZERO, result);
+}
+
+
+TEST_F(SymbolicActionTest, WeakPreImageDisjunction) {
+    BDD world = bdd_var[1] & bdd_var[2];
+    BDD result = weak_pre_image(a5, world);
+    EXPECT_EQ(bdd_var[0], result);
+
+    world = bdd_var[1] | bdd_var[2];
+    result = weak_pre_image(a5, world);
+    EXPECT_EQ(bdd_var[0], result);
+
+    world = bdd_var[1] & ~bdd_var[2];
+    result = weak_pre_image(a5, world);
+    EXPECT_EQ(bdd_var[0], result);
+
+    world = ~bdd_var[1] & bdd_var[2];
+    result = weak_pre_image(a5, world);
+    EXPECT_EQ(bdd_var[0], result);
+}
+
+
+
+TEST_F(SymbolicActionTest, StrongPreImageWorldTrue) {
+    BDD world = BDD_ONE;
+    BDD result = strong_pre_image(a1, world);
+    EXPECT_EQ(a1.precondition(), result);
+
+    result = strong_pre_image(a2, world);
+    EXPECT_EQ(a2.precondition(), result);
+
+    result = strong_pre_image(a3, world);
+    EXPECT_EQ(a3.precondition(), result);
+
+    result = strong_pre_image(a4, world);
+    EXPECT_EQ(a4.precondition(), result);
+
+    result = strong_pre_image(a5, world);
+    EXPECT_EQ(a5.precondition(), result);
+}
+
+TEST_F(SymbolicActionTest, StrongPreImageWorldFalse) {
+    BDD world = BDD_ZERO;
+    BDD result = strong_pre_image(a1, world);
+    EXPECT_EQ(BDD_ZERO, result);
+
+    result = strong_pre_image(a2, world);
+    EXPECT_EQ(BDD_ZERO, result);
+
+    result = strong_pre_image(a3, world);
+    EXPECT_EQ(BDD_ZERO, result);
+
+    result = strong_pre_image(a4, world);
+    EXPECT_EQ(BDD_ZERO, result);
+
+    result = strong_pre_image(a5, world);
+    EXPECT_EQ(BDD_ZERO, result);
+}
+
+TEST_F(SymbolicActionTest, StrongPreImageSimpleEffect) {
+    BDD world = bdd_var[1] & bdd_var[2];
+    BDD result = strong_pre_image(a3, world);
+    EXPECT_EQ(bdd_var[0] & bdd_var[2], result);
+
+    world = bdd_var[1] | bdd_var[2];
+    result = strong_pre_image(a3, world);
+    EXPECT_EQ(bdd_var[0], result);
+
+    world = bdd_var[1] & ~bdd_var[2];
+    result = strong_pre_image(a3, world);
+    EXPECT_EQ(bdd_var[0] & ~bdd_var[2], result);
+
+    world = ~bdd_var[1] & bdd_var[2];
+    result = strong_pre_image(a3, world);
+    EXPECT_EQ(BDD_ZERO, result);
+}
+
+
+TEST_F(SymbolicActionTest, StrongPreImageConjunction) {
+    BDD world = bdd_var[1] & bdd_var[2];
+    BDD result = strong_pre_image(a4, world);
+    EXPECT_EQ(bdd_var[0], result);
+
+    world = bdd_var[1] | bdd_var[2];
+    result = strong_pre_image(a4, world);
+    EXPECT_EQ(bdd_var[0], result);
+
+    world = bdd_var[1] & ~bdd_var[2];
+    result = strong_pre_image(a4, world);
+    EXPECT_EQ(BDD_ZERO, result);
+
+    world = ~bdd_var[1] & bdd_var[2];
+    result = strong_pre_image(a4, world);
+    EXPECT_EQ(BDD_ZERO, result);
+}
+
+
+TEST_F(SymbolicActionTest, StrongPreImageDisjunction) {
+    BDD world = bdd_var[1] & bdd_var[2];
+    BDD result = strong_pre_image(a5, world);
+
+    //TODO think which is the expected result
+    EXPECT_EQ(bdd_var[0] & bdd_var[1] & bdd_var[2], result);
+    // EXPECT_NE(BDD_ZERO, result);
+
+    world = bdd_var[1] | bdd_var[2];
+    result = strong_pre_image(a5, world);
+    EXPECT_EQ(bdd_var[0], result);
+
+    world = bdd_var[1] & ~bdd_var[2];
+    result = strong_pre_image(a5, world);
+    EXPECT_EQ(BDD_ZERO, result);
+
+    world = ~bdd_var[1] & bdd_var[2];
+    result = strong_pre_image(a5, world);
+    EXPECT_EQ(BDD_ZERO, result);
+}
 
 class TriangleTireWorldTest : public ::testing::Test {
 
