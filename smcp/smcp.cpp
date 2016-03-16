@@ -92,3 +92,15 @@ BDD weak_pre_image(SymbolicActionList actions, BDD world_state) {
 BDD strong_pre_image(SymbolicActionList actions, BDD world_state) {
     return pre_image(actions, world_state, strong_pre_image);
 }
+
+BDD weak_regression(SymbolicActionList actions, BDD goal) {
+    BDD X = BDD_ZERO;
+    BDD X_new = goal;
+    while (X != X_new){
+        X = X_new;
+        X_new = weak_pre_image(actions, X);
+        X_new |= X;
+    }
+    return X_new;
+}
+

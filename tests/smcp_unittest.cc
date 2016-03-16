@@ -281,15 +281,14 @@ TEST_F(SymbolicActionTest, StrongPreImageSet) {
 class TriangleTireWorldTest : public ::testing::Test {
 
 protected:
-
     BDD spare_in_n1, spare_in_n2, spare_in_n3, vehicle_at_n1, vehicle_at_n2, vehicle_at_n3, not_flattire_, empty;
     SymbolicAction *change_tire_n1, *change_tire_n2, *change_tire_n3, *move_n1_n2, *move_n2_n3;
+    SymbolicActionList actions;
+    BDD state1, state2, state3;
 
     virtual void SetUp() {
-//    TriangleTireWorldTest() {
         Cudd test_mgr = Cudd(0, 0);
         smcp::set_mgr(test_mgr);
-//        test_mgr = smcp::mgr();
 
         std::map<string, BDD> v;
         string fluente[8] = {"spare_in_n1", "spare_in_n2", "spare_in_n3", "vehicle_at_n1", "vehicle_at_n2",
@@ -308,6 +307,9 @@ protected:
         not_flattire_ = v["not_flattire_"];
         empty = v["_empty"];
 
+        state1 = vehicle_at_n1 & ~vehicle_at_n2 & ~vehicle_at_n3;
+        state2 = ~vehicle_at_n1 & vehicle_at_n2 & ~vehicle_at_n3;
+        state3 = ~vehicle_at_n1 & ~vehicle_at_n2 & vehicle_at_n3;
 
         change_tire_n1 =
                 new SymbolicAction("change_tire_n1", spare_in_n1 & vehicle_at_n1,
@@ -316,6 +318,7 @@ protected:
         change_tire_n2 =
                 new SymbolicAction("change_tire_n2", spare_in_n2 & vehicle_at_n2,
                                    (~spare_in_n2 & not_flattire_) | (spare_in_n2));
+
         change_tire_n3 =
                 new SymbolicAction("change_tire_n3", spare_in_n3 & vehicle_at_n3,
                                    (~spare_in_n3 & not_flattire_) | (spare_in_n3));
@@ -325,30 +328,33 @@ protected:
                                    (~vehicle_at_n1 & vehicle_at_n2 & ~not_flattire_) |
                                    (~vehicle_at_n1 & vehicle_at_n2 & empty));
 
-
         move_n2_n3 =
                 new SymbolicAction("move_n2_n3", not_flattire_ & vehicle_at_n2,
                                    (~vehicle_at_n2 & vehicle_at_n3 & ~not_flattire_) |
                                    (~vehicle_at_n2 & vehicle_at_n3 & empty));
 
+        actions.push_back(change_tire_n1);
+        actions.push_back(change_tire_n2);
+        actions.push_back(change_tire_n3);
+        actions.push_back(move_n1_n2);
+        actions.push_back(move_n2_n3);
     }
 
-//    virtual ~FooTest() {
-//        }
-
-
-    virtual void TearDown() { }
 
 
 };
 
 
-// TODO implement tests
-
-TEST_F(TriangleTireWorldTest, EmptyWeakPreImage) {
-    BDD result = weak_pre_image(move_n1_n2, BDD_ZERO);
-    EXPECT_EQ(BDD_ZERO, result);
+TEST_F(TriangleTireWorldTest, WeakRegression) {
+    BDD weak_regression_result = weak_regression(actions, vehicle_at_n3);
+    EXPECT_NE(BDD_ZERO, weak_regression_result & state1 & ~not_flattire_ & spare_in_n1);
+    EXPECT_EQ(BDD_ZERO, weak_regression_result & state1 & ~not_flattire_ & ~spare_in_n1);
+    EXPECT_NE(BDD_ZERO, weak_regression_result & state1 & not_flattire_);
+    EXPECT_EQ(BDD_ZERO, weak_regression_result & state2 & ~not_flattire_ & ~spare_in_n2);
+    EXPECT_NE(BDD_ZERO, weak_regression_result & state2 & ~not_flattire_ & spare_in_n2);
+    EXPECT_EQ(BDD_ZERO, weak_regression_result & state2 & ~not_flattire_ & ~spare_in_n2);
+    EXPECT_NE(BDD_ZERO, weak_regression_result & state2 & not_flattire_);
+    EXPECT_NE(BDD_ZERO, weak_regression_result & state3);
 }
-
 
 

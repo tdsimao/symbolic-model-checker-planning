@@ -1,5 +1,5 @@
 #include "cuddObj.hh"
-
+using namespace std;
 
 #define BDD_ZERO smcp::mgr().bddZero()
 #define BDD_ONE smcp::mgr().bddOne()
@@ -46,4 +46,6 @@ BDD strong_pre_image(SymbolicAction * action, BDD world_state);
 
 BDD weak_pre_image(SymbolicActionList actions, BDD world_state);
 BDD strong_pre_image(SymbolicActionList actions, BDD world_state);
+
+BDD weak_regression(SymbolicActionList actions, BDD goal);
 
