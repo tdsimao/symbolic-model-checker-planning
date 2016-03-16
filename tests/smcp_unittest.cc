@@ -260,20 +260,20 @@ TEST_F(SymbolicActionTest, StrongPreImageDisjunction) {
 
 TEST_F(SymbolicActionTest, WeakPreImageSet) {
     BDD world = bdd_var[1] & bdd_var[2];
-    BDD result = weak_pre_image(actions, world);
+    BDD result = weak_pre_image_actions(actions, world);
     EXPECT_EQ(bdd_var[0] | bdd_var[1] & bdd_var[2], result);
 }
 
 
 TEST_F(SymbolicActionTest, StrongPreImageSet) {
     BDD world = bdd_var[1] & bdd_var[2];
-    BDD result = strong_pre_image(actions, world);
+    BDD result = strong_pre_image_actions(actions, world);
     EXPECT_EQ(bdd_var[0] | bdd_var[1] & bdd_var[2], result);
 
     SymbolicActionList actionList;
     actionList.push_back(actions[2]);
     actionList.push_back(actions[4]);
-    result = strong_pre_image(actionList, world);
+    result = strong_pre_image_actions(actionList, world);
     EXPECT_EQ(bdd_var[0] & bdd_var[2], result);
 }
 
