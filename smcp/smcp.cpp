@@ -62,16 +62,33 @@ void SymbolicAction::set_name(std::string name) {
 }
 
 
-BDD weak_pre_image(SymbolicAction action, BDD world_state) {
-    BDD result = action.effect() & world_state;
-    result = result.ExistAbstract(action.changes());
-    result &= action.precondition();
+BDD weak_pre_image(SymbolicAction * action, BDD world_state) {
+    BDD result = action->effect() & world_state;
+    result = result.ExistAbstract(action->changes());
+    result &= action->precondition();
     return result;
 }
 
-BDD strong_pre_image(SymbolicAction action, BDD world_state) {
-    BDD result = ~action.effect() | world_state;
-    result = result.UnivAbstract(action.changes());
-    result &= action.precondition();
+BDD strong_pre_image(SymbolicAction * action, BDD world_state) {
+    BDD result = ~action->effect() | world_state;
+    result = result.UnivAbstract(action->changes());
+    result &= action->precondition();
     return result;
+}
+
+
+BDD pre_image(SymbolicActionList actions, BDD world_state, BDD(* f)(SymbolicAction *, BDD)) {
+    BDD result = BDD_ZERO;
+    for (SymbolicActionList::const_iterator ei = actions.begin(); ei != actions.end(); ++ei)
+        result |= f(*ei, world_state);
+    return result;
+}
+
+
+BDD weak_pre_image(SymbolicActionList actions, BDD world_state) {
+    return pre_image(actions, world_state, weak_pre_image);
+}
+
+BDD strong_pre_image(SymbolicActionList actions, BDD world_state) {
+    return pre_image(actions, world_state, strong_pre_image);
 }

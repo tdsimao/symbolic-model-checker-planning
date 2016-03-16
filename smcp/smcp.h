@@ -14,6 +14,7 @@ public:
 
 
 class SymbolicAction {
+private:
     std::string name_;
     BDD precondition_;
     BDD effect_;
@@ -35,8 +36,14 @@ public:
 };
 
 
+class SymbolicActionList : public std::vector<SymbolicAction *>{};
 
 
-BDD weak_pre_image(SymbolicAction action, BDD world_state);
+BDD weak_pre_image(SymbolicAction * action, BDD world_state);
 
-BDD strong_pre_image(SymbolicAction action, BDD world_state);
+BDD strong_pre_image(SymbolicAction * action, BDD world_state);
+
+
+BDD weak_pre_image(SymbolicActionList actions, BDD world_state);
+BDD strong_pre_image(SymbolicActionList actions, BDD world_state);
+
