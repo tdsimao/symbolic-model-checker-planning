@@ -104,3 +104,13 @@ BDD weak_regression(SymbolicActionList actions, BDD goal) {
     return X_new;
 }
 
+BDD strong_regression(SymbolicActionList actions, BDD goal) {
+    BDD X = BDD_ZERO;
+    BDD X_new = goal;
+    while (X != X_new){
+        X = X_new;
+        X_new = strong_pre_image(actions, X);
+        X_new |= X;
+    }
+    return X_new;
+}

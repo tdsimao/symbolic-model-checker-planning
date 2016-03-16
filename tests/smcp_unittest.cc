@@ -346,15 +346,26 @@ protected:
 
 
 TEST_F(TriangleTireWorldTest, WeakRegression) {
-    BDD weak_regression_result = weak_regression(actions, vehicle_at_n3);
-    EXPECT_NE(BDD_ZERO, weak_regression_result & state1 & ~not_flattire_ & spare_in_n1);
-    EXPECT_EQ(BDD_ZERO, weak_regression_result & state1 & ~not_flattire_ & ~spare_in_n1);
-    EXPECT_NE(BDD_ZERO, weak_regression_result & state1 & not_flattire_);
-    EXPECT_EQ(BDD_ZERO, weak_regression_result & state2 & ~not_flattire_ & ~spare_in_n2);
-    EXPECT_NE(BDD_ZERO, weak_regression_result & state2 & ~not_flattire_ & spare_in_n2);
-    EXPECT_EQ(BDD_ZERO, weak_regression_result & state2 & ~not_flattire_ & ~spare_in_n2);
-    EXPECT_NE(BDD_ZERO, weak_regression_result & state2 & not_flattire_);
-    EXPECT_NE(BDD_ZERO, weak_regression_result & state3);
+    BDD regression_result = weak_regression(actions, vehicle_at_n3);
+    EXPECT_NE(BDD_ZERO, regression_result & state1 & ~not_flattire_ & spare_in_n1);
+    EXPECT_EQ(BDD_ZERO, regression_result & state1 & ~not_flattire_ & ~spare_in_n1);
+    EXPECT_NE(BDD_ZERO, regression_result & state1 & not_flattire_);
+    EXPECT_EQ(BDD_ZERO, regression_result & state2 & ~not_flattire_ & ~spare_in_n2);
+    EXPECT_NE(BDD_ZERO, regression_result & state2 & ~not_flattire_ & spare_in_n2);
+    EXPECT_EQ(BDD_ZERO, regression_result & state2 & ~not_flattire_ & ~spare_in_n2);
+    EXPECT_NE(BDD_ZERO, regression_result & state2 & not_flattire_);
+    EXPECT_NE(BDD_ZERO, regression_result & state3);
 }
+
+
+TEST_F(TriangleTireWorldTest, StrongRegression) {
+    BDD regression_result = strong_regression(actions, vehicle_at_n3);
+    EXPECT_EQ(BDD_ZERO, regression_result & state1);
+    EXPECT_EQ(BDD_ZERO, regression_result & state2 & ~not_flattire_);
+    EXPECT_NE(BDD_ZERO, regression_result & state2 & not_flattire_);
+    EXPECT_NE(BDD_ZERO, regression_result & state3);
+}
+
+
 
 
