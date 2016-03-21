@@ -85,7 +85,7 @@ BDD pre_image(SymbolicActionList actions, BDD world_state, BDD(* f)(SymbolicActi
 }
 
 
-BDD weak_pre_image_actions(SymbolicActionList actions, BDD world_state) {
+BDD weak_pre_image_actions(SymbolicActionList actions, BDD world_state ) {
     return pre_image(actions, world_state, weak_pre_image);
 }
 
@@ -93,21 +93,21 @@ BDD strong_pre_image_actions(SymbolicActionList actions, BDD world_state) {
     return pre_image(actions, world_state, strong_pre_image);
 }
 
-BDD least_fixed_point(SymbolicActionList actions, BDD goal, BDD (*f)(SymbolicActionList, BDD)) {
+BDD least_fixed_point(SymbolicActionList actions, BDD goal, BDD constraints,  BDD (*f)(SymbolicActionList, BDD)) {
     BDD X = BDD_ZERO;
-    BDD X_new = goal;
+    BDD X_new = goal & constraints;
     while (X != X_new){
         X = X_new;
-        X_new = f(actions, X);
+        X_new = f(actions, X) & constraints;
         X_new |= X;
     }
     return X_new;
 }
 
-BDD weak_regression(SymbolicActionList actions, BDD goal) {
-    return least_fixed_point(actions, goal, weak_pre_image_actions);
+BDD weak_regression(SymbolicActionList actions, BDD goal, BDD constraints) {
+    return least_fixed_point(actions, goal, constraints, weak_pre_image_actions);
 }
 
-BDD strong_regression(SymbolicActionList actions, BDD goal) {
-    return least_fixed_point(actions, goal, strong_pre_image_actions);
+BDD strong_regression(SymbolicActionList actions, BDD goal, BDD constraints) {
+    return least_fixed_point(actions, goal, constraints, strong_pre_image_actions);
 }

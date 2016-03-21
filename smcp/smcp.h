@@ -47,6 +47,6 @@ BDD strong_pre_image(SymbolicAction * action, BDD world_state);
 BDD weak_pre_image_actions(SymbolicActionList actions, BDD world_state);
 BDD strong_pre_image_actions(SymbolicActionList actions, BDD world_state);
 
-BDD weak_regression(SymbolicActionList actions, BDD goal);
-BDD strong_regression(SymbolicActionList actions, BDD goal);
+BDD weak_regression(SymbolicActionList actions, BDD goal, BDD constraints = BDD_ONE);
+BDD strong_regression(SymbolicActionList actions, BDD goal, BDD constraints = BDD_ONE);
 

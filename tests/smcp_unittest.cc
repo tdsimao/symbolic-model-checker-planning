@@ -284,7 +284,7 @@ protected:
     BDD spare_in_n1, spare_in_n2, spare_in_n3, vehicle_at_n1, vehicle_at_n2, vehicle_at_n3, not_flattire_, empty;
     SymbolicAction *change_tire_n1, *change_tire_n2, *change_tire_n3, *move_n1_n2, *move_n2_n3;
     SymbolicActionList actions;
-    BDD state1, state2, state3;
+    BDD state1, state2, state3, constraints;
 
     virtual void SetUp() {
         Cudd test_mgr = Cudd(0, 0);
@@ -310,6 +310,7 @@ protected:
         state1 = vehicle_at_n1 & ~vehicle_at_n2 & ~vehicle_at_n3;
         state2 = ~vehicle_at_n1 & vehicle_at_n2 & ~vehicle_at_n3;
         state3 = ~vehicle_at_n1 & ~vehicle_at_n2 & vehicle_at_n3;
+        constraints = state1 |state2 |state3;
 
         change_tire_n1 =
                 new SymbolicAction("change_tire_n1", spare_in_n1 & vehicle_at_n1,
@@ -346,7 +347,7 @@ protected:
 
 
 TEST_F(TriangleTireWorldTest, WeakRegression) {
-    BDD regression_result = weak_regression(actions, vehicle_at_n3);
+    BDD regression_result = weak_regression(actions, vehicle_at_n3, constraints);
     EXPECT_NE(BDD_ZERO, regression_result & state1 & ~not_flattire_ & spare_in_n1);
     EXPECT_EQ(BDD_ZERO, regression_result & state1 & ~not_flattire_ & ~spare_in_n1);
     EXPECT_NE(BDD_ZERO, regression_result & state1 & not_flattire_);
@@ -359,13 +360,17 @@ TEST_F(TriangleTireWorldTest, WeakRegression) {
 
 
 TEST_F(TriangleTireWorldTest, StrongRegression) {
-    BDD regression_result = strong_regression(actions, vehicle_at_n3);
+    BDD regression_result = strong_regression(actions, vehicle_at_n3, constraints);
     EXPECT_EQ(BDD_ZERO, regression_result & state1);
     EXPECT_EQ(BDD_ZERO, regression_result & state2 & ~not_flattire_);
     EXPECT_NE(BDD_ZERO, regression_result & state2 & not_flattire_);
     EXPECT_NE(BDD_ZERO, regression_result & state3);
 }
 
-
-
+TEST_F(TriangleTireWorldTest, Constraints) {
+    BDD weak_regression_result = weak_regression(actions, vehicle_at_n3, constraints);
+    EXPECT_EQ(BDD_ZERO, weak_regression_result & vehicle_at_n1 & vehicle_at_n2);
+    EXPECT_EQ(BDD_ZERO, weak_regression_result & vehicle_at_n1 & vehicle_at_n3);
+    EXPECT_EQ(BDD_ZERO, weak_regression_result & vehicle_at_n2 & vehicle_at_n3);
+}
 
