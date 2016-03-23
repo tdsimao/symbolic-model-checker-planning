@@ -15,10 +15,9 @@ int main() {
 #define N 8
     std::map<string, BDD> v;
     string fluente[N] = {"spare_in_n1", "spare_in_n2", "spare_in_n3", "vehicle_at_n1", "vehicle_at_n2", "vehicle_at_n3",
-                        "not_flattire_", "_"};
-    int i = 0;
+                        "not_flattire_", "empty"};
     for(int i = 0; i<N; i++)
-        v[fluente[i]] = test_mgr_.bddVar(i);
+        v[fluente[i]] = test_mgr_.bddVar();
 
 
     SymbolicAction action = SymbolicAction("teste");
@@ -31,7 +30,14 @@ int main() {
     BDD p = action.precondition();
     BDD c = action.changes();
 
-    cout << "Hello, World!" << endl;
+    BDD r =  weak_pre_image(& action,v["empty"]);
+    BDD bdd_var[3];
+    for(int i = 0; i<3; i++)
+        v[fluente[i]] = test_mgr_.bddVar();
+
+    r =  strong_pre_image(& action,v["empty"]);
+
+    cout << "OK!" << endl;
 
     return 0;
 }

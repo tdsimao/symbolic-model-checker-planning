@@ -1,6 +1,6 @@
 # Create a library called "smcp" which includes the source file "smcp.cxx".
 # The extension is already found. Any number of sources could be listed here.
-add_library (smcp smcp.cpp)
+add_library (smcp smcp.cc)
 
 
 # Make sure the compiler can find include files for our Hello library

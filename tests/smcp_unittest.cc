@@ -368,9 +368,9 @@ TEST_F(TriangleTireWorldTest, StrongRegression) {
 }
 
 TEST_F(TriangleTireWorldTest, Constraints) {
-    BDD weak_regression_result = weak_regression(actions, vehicle_at_n3, constraints);
-    EXPECT_EQ(BDD_ZERO, weak_regression_result & vehicle_at_n1 & vehicle_at_n2);
-    EXPECT_EQ(BDD_ZERO, weak_regression_result & vehicle_at_n1 & vehicle_at_n3);
-    EXPECT_EQ(BDD_ZERO, weak_regression_result & vehicle_at_n2 & vehicle_at_n3);
+    BDD regression_result = weak_regression(actions, vehicle_at_n3, constraints);
+    EXPECT_EQ(BDD_ZERO, regression_result & vehicle_at_n1 & vehicle_at_n2);
+    EXPECT_EQ(BDD_ZERO, regression_result & vehicle_at_n1 & vehicle_at_n3);
+    EXPECT_EQ(BDD_ZERO, regression_result & vehicle_at_n2 & vehicle_at_n3);
 }
 
