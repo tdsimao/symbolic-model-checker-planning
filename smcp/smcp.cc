@@ -93,14 +93,15 @@ BDD strong_pre_image_actions(SymbolicActionList actions, BDD world_state) {
     return pre_image(actions, world_state, strong_pre_image);
 }
 
-BDD least_fixed_point(SymbolicActionList actions, BDD goal, BDD constraints,  BDD (*f)(SymbolicActionList, BDD)) {
-    BDD Y = BDD_ZERO;
-    BDD X = goal & constraints;
+BDD least_fixed_point(SymbolicActionList actions, BDD G, BDD constraints,  BDD (*f)(SymbolicActionList, BDD)) {
+    BDD X = BDD_ZERO;
+    BDD Y = BDD_ONE;
+    G = G & constraints;
     while (X != Y){
         Y = X;
-        X = X | (f(actions, Y) & constraints) ;
+        X = G | (f(actions, X) & constraints) ;
     }
-    return Y;
+    return X;
 }
 
 BDD weak_regression(SymbolicActionList actions, BDD goal, BDD constraints) {
