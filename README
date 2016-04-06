@@ -1,3 +1,5 @@
-symbolic-model-checker-planning
+### Symbolic Model Checker Planning
 
-We assume the existence of a symbolic link to the cudd installation in the lib directory in the root directory.
+Run the setup.sh script to download the libraries.
+
+To build the library run the build.sh script.

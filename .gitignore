@@ -1,5 +1,3 @@
-lib/cudd/*
-lib/gtest/*
 
 .idea
 
@@ -8,8 +6,7 @@ tests/test
 
 smcp/libsmcp.a
 
-build/*
-
 
 old/*
 
+util/
